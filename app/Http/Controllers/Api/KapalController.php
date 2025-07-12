@@ -22,7 +22,7 @@ class KapalController extends Controller
                 $query->where('status', $request->status);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10); // ✅ Pagination 10 per page
+            ->paginate(5); // ✅ Pagination 10 per page
 
         return response()->json($kapals);
 
@@ -39,6 +39,7 @@ class KapalController extends Controller
                 'nama_kapal' => 'required|string',
                 'tipe' => 'required|string',
                 'kapasitas' => 'required|integer',
+                'harga' => 'required|integer',
                 'kode_kapal' => 'required|string',
                 'rute' => 'required|string',
                 'home_base' => 'required|string',
@@ -80,6 +81,7 @@ class KapalController extends Controller
                 'nama_kapal' => 'required|string',
                 'tipe' => 'required|string',
                 'kapasitas' => 'required|integer',
+                'harga' => 'required|integer',
                 'kode_kapal' => 'required|string',
                 'rute' => 'required|string',
                 'home_base' => 'required|string',

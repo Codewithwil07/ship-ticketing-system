@@ -1,25 +1,30 @@
 <?php
 
-use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\IsAdmin;
 
-// 🔓 Halaman depan
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
 
-// 🔐 Dashboard umum (user & admin) — non protected sementara
-Route::view('/dashboard', 'dashboard');
+// 🔐 AUTH (Login & Register)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', fn() => view('auth.login'))->name('login');
+    Route::get('/register', fn() => view('auth.register'))->name('register');
+});
 
-// ⚙️ Group route admin (hanya untuk role 'admin') — sementara lepas auth
-Route::middleware([IsAdmin::class])
-    ->group(function () {
-        Route::get('/admin/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
-    });
+// 🔓 LOGOUT
+Route::get('/logout', function () {
+    Auth::logout();
+    session()->invalidate();
+    session()->regenerateToken();
+    return redirect()->route('login');
+})->name('logout');
 
-// 🚧 Optional: dummy route login biar gak error
-Route::get('/login', function () {
-    return response()->json(['message' => 'Unauthorized'], 401);
-})->name('login');
+// 👤 USER AREA
+
+// USER
+Route::get('/', fn() => view('user.home'))->name('user.home');
+
+// ADMIN
+Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
+Route::get('/admin/kapal', fn() => view('admin.kapal.index'))->name('admin.kapal.index');
+Route::get('/admin/jadwal', fn() => view('admin.jadwal.index'))->name('admin.jadwal.index');

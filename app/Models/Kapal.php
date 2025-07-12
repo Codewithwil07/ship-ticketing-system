@@ -13,6 +13,7 @@ class Kapal extends Model
         'nama_kapal',
         'tipe',
         'kapasitas',
+        'harga',
         'kode_kapal',
         'rute',
         'home_base',

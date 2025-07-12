@@ -87,28 +87,32 @@ class PembayaranController extends Controller
 
 
 
-     /**
+    /**
      * 🔍 List semua pembayaran (search, filter, pagination)
      */
     public function index(Request $request)
     {
-        $query = Pembayaran::with(['pemesanan.user']);
+        try {
+            $query = Pembayaran::with(['pemesanan.user']);
 
-        if ($search = $request->query('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('metode_pembayaran', 'like', "%$search%")
-                  ->orWhereHas('pemesanan.user', function ($q2) use ($search) {
-                      $q2->where('name', 'like', "%$search%");
-                  });
-            });
+            if ($search = $request->query('search')) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('metode_pembayaran', 'like', "%$search%")
+                        ->orWhereHas('pemesanan.user', function ($q2) use ($search) {
+                            $q2->where('name', 'like', "%$search%");
+                        });
+                });
+            }
+
+            if ($status = $request->query('status')) {
+                $query->where('status_verifikasi', $status);
+            }
+
+            $perPage = $request->query('per_page', 10);
+            return response()->json($query->latest()->paginate($perPage));
+        } catch (Throwable $e) {
+            return response()->json(['message' => 'Gagal memuat data pembayaran', 'error' => $e->getMessage()], 500);
         }
-
-        if ($status = $request->query('status')) {
-            $query->where('status_verifikasi', $status);
-        }
-
-        $perPage = $request->query('per_page', 10);
-        return response()->json($query->latest()->paginate($perPage));
     }
 
     /**

@@ -6,9 +6,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KapalController;
 use App\Http\Controllers\Api\PemesananController;
 use App\Http\Controllers\Api\PembayaranController;
-use App\Http\Controllers\Api\Admin\PembayaranController as AdminPembayaran;
-use App\Http\Controllers\JadwalKeberangkatanController;
 use App\Models\Pembayaran;
+use App\Http\Controllers\Api\Admin\PembayaranController as AdminPembayaran;
+use App\Http\Controllers\Api\JadwalKeberangkatanController;
 
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
@@ -41,7 +41,7 @@ Route::middleware(['auth:api', \App\Http\Middleware\IsAdmin::class])->group(func
     Route::apiResource('pemesanans', PemesananController::class)->except(['store']);
 });
 
-
+//🔐 USER
 Route::middleware('auth:api')->group(function () {
     Route::get('/user/pembayarans', [PembayaranController::class, 'getUser']);
     Route::post('/user/pembayarans', [PembayaranController::class, 'store']);
