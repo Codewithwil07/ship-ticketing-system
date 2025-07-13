@@ -55,9 +55,7 @@ Route::middleware(['auth:api', \App\Http\Middleware\IsAdmin::class])->group(func
 
 
 // 🔐 USER - jadwal_keberangakatan
-Route::middleware('auth:api')->group(function () {
-    Route::get('/user/jadwal-keberagkatan', [JadwalKeberangkatanController::class, 'getUser']);
-});
+Route::get('/user/jadwal-keberangkatan', [JadwalKeberangkatanController::class, 'getUser']);
 
 // 🔐 Admin jadwal_keberangakatan
 Route::middleware(['auth:api', \App\Http\Middleware\IsAdmin::class])->group(function () {

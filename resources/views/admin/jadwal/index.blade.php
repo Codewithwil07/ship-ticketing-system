@@ -25,8 +25,8 @@
 
 <div id="loading" class="text-center py-10 text-gray-400 hidden">Loading...</div>
 
-<div id="data-container" class="overflow-x-auto hidden">
-    <table class="min-w-full text-sm text-left border bg-white rounded shadow-sm">
+<div id="data-container" class="overflow-x-auto hidden rounded-md shadow-sm">
+    <table class="min-w-full text-sm text-left bg-white">
         <thead class="bg-gray-100 text-gray-600 uppercase">
             <tr>
                 <th class="px-4 py-3">Kapal</th>

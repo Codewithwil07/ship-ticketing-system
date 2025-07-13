@@ -14,7 +14,7 @@ class PemesananController extends Controller
     public function index(Request $request)
     {
         try {
-            $data = Pemesanan::with(['user', 'jadwal'])
+            $data = Pemesanan::with(['user', 'jadwal.kapal'])
                 ->when($request->search, function ($query) use ($request) {
                     $query->where('nama_penumpang', 'like', '%' . $request->search . '%');
                 })
@@ -37,7 +37,7 @@ class PemesananController extends Controller
                 'jadwal_id' => 'required|exists:jadwal_keberangkatans,id',
                 'jumlah_tiket' => 'required|integer|min:1',
                 'total_harga' => 'required|integer',
-                'status' => 'required|in:pending,diterima,ditolak',
+                'status' => 'required|in:pending,lunas,batal',
             ]);
 
             $user = $request->user();
@@ -106,7 +106,7 @@ class PemesananController extends Controller
             $pemesanan = Pemesanan::findOrFail($id);
 
             $data = $request->validate([
-                'status' => 'required|in:pending,lunas,bayar', // required untuk admin
+                'status' => 'required|in:pending,lunas,batal', // required untuk admin
             ]);
 
             $pemesanan->update($data);

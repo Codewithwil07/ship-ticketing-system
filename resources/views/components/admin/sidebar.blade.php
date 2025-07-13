@@ -3,8 +3,8 @@
         <a href="{{ route('admin.dashboard') }}" class="block py-2 px-3 rounded hover:bg-gray-100">Dashboard</a>
         <a href="{{route('admin.kapal.index')}}" class="block py-2 px-3 rounded hover:bg-gray-100">Kapal</a>
         <a href="{{route('admin.jadwal.index')}}" class="block py-2 px-3 rounded hover:bg-gray-100">Jadwal Keberangkatan</a>
-        <a href="#" class="block py-2 px-3 rounded hover:bg-gray-100">Pemesanan</a>
-        <a href="#" class="block py-2 px-3 rounded hover:bg-gray-100">Pembayaran</a>
-        <a href="#" class="block py-2 px-3 rounded hover:bg-gray-100">Laporan</a>
+        <a href="{{route('admin.pemesanan.index')}}" class="block py-2 px-3 rounded hover:bg-gray-100">Pemesanan</a>
+        <a href="{{route('admin.pembayaran.index')}}" class="block py-2 px-3 rounded hover:bg-gray-100">Pembayaran</a>
+        <a href="{{route('admin.laporan.index')}}" class="block py-2 px-3 rounded hover:bg-gray-100">Rekapitulasi</a>
     </nav>
 </aside>

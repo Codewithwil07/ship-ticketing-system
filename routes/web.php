@@ -28,3 +28,6 @@ Route::get('/', fn() => view('user.home'))->name('user.home');
 Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
 Route::get('/admin/kapal', fn() => view('admin.kapal.index'))->name('admin.kapal.index');
 Route::get('/admin/jadwal', fn() => view('admin.jadwal.index'))->name('admin.jadwal.index');
+Route::get('/admin/pemesanan', fn() => view('admin.pemesanan.index'))->name('admin.pemesanan.index');
+Route::get('/admin/pembayaran', fn() => view('admin.pembayaran.index'))->name('admin.pembayaran.index');
+Route::get('/admin/laporan', fn() => view('admin.laporan.index'))->name('admin.laporan.index');
