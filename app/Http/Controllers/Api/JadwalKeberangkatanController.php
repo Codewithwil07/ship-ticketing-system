@@ -54,6 +54,19 @@ class JadwalKeberangkatanController extends Controller
         }
     }
 
+
+    public function showJadwal($id)
+    {
+        try {
+            $jadwal = JadwalKeberangkatan::with('kapal')->findOrFail($id);
+            return response()->json($jadwal);
+        } catch (ModelNotFoundException) {
+            return response()->json(['message' => 'Jadwal tidak ditemukan'], 404);
+        } catch (Throwable $e) {
+            return response()->json(['message' => 'Gagal memuat detail jadwal', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * 🔐 ADMIN - CREATE
      */

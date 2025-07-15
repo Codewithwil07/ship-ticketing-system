@@ -23,6 +23,8 @@ Route::get('/logout', function () {
 
 // USER
 Route::get('/', fn() => view('user.home'))->name('user.home');
+Route::get('/booking', fn() => view('user.transaksi'))->name('user.transaksi');
+Route::get('/tiket', fn() => view('user.tiket'))->name('user.tiket');
 
 // ADMIN
 Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');

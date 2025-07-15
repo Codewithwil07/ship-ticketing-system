@@ -20,43 +20,63 @@
             class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition cursor-pointer">Login</button>
     </form>
 
-
-    <p class="text-red-600 left-0 right-0 text-center mt-10 absolute" id="error"></p>
-
     <p class="text-sm text-gray-600 mt-4 text-center">
         Belum punya akun? <a href="{{ url('/register') }}" class="text-blue-600 hover:underline">Daftar</a>
     </p>
+
+    <!-- Toast -->
+    <div id="toast-container" class="absolute bottom-4 right-4 space-y-2 z-50"></div>
 </div>
 
 <script>
-    const error = document.querySelector('#error')
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `max-w-xs px-4 py-3 rounded shadow text-sm text-white ${
+            type === 'error' ? 'bg-red-500' : 'bg-green-600'
+        }`;
+        toast.innerText = message;
+        document.getElementById('toast-container').appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
     document.querySelector('#login-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const form = e.target;
         const data = {
-            email: form.email.value,
-            password: form.password.value
+            email: form.email.value.trim(),
+            password: form.password.value.trim()
         };
 
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
 
-        const result = await res.json();
+            const result = await res.json();
 
-        if (res.ok) {
-            localStorage.setItem('token', result.access_token);
-            localStorage.setItem('role', result.user.role);
-            localStorage.setItem('user', JSON.stringify(result.user));
-            const role = result.user?.role || 'user';
-            location.href = role === 'admin' ? '/admin/dashboard' : '/';
-        } else {
-            const errorMessage = result.message || 'Username atau password salah';
-            error.innerText = errorMessage;
+            if (res.ok) {
+                localStorage.setItem('token', result.access_token);
+                localStorage.setItem('role', result.user.role);
+                localStorage.setItem('user', JSON.stringify(result.user));
+
+                showToast('Login berhasil. Mengarahkan...');
+
+                const role = result.user?.role || 'user';
+                setTimeout(() => {
+                    location.href = role === 'admin' ? '/admin/dashboard' : '/';
+                }, 1500);
+            } else {
+                const msg = result.message || 'Email atau password salah';
+                showToast(msg, 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Terjadi kesalahan saat login', 'error');
         }
     });
 </script>

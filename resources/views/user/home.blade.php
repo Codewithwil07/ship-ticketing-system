@@ -1,22 +1,24 @@
 @extends('layouts.user')
 <!-- Header -->
+@section('content')
 <header class="bg-white shadow-sm border-b">
     <div class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <i class="fas fa-ship text-2xl text-blue-600"></i>
-                <h1 class="text-2xl font-bold text-gray-900">SeaBooking</h1>
+                <h1 class="text-2xl font-bold text-gray-900">Sub<span class="text-blue-500">sea</span></h1>
             </div>
-            <div class="flex items-center space-x-6">
-                <nav class="hidden md:flex space-x-6">
+            <div class="flex items-center">
+                <nav class="hidden md:flex space-x-6 items-center">
                     <a href="#" class="text-gray-700 hover:text-blue-600">Beranda</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600">Pesanan Saya</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600">Bantuan</a>
+                    <a href="{{route('user.tiket')}}" class="text-gray-700 hover:text-blue-600" id="riwayat-tiket">Tiket</a>
+                    <a class="bg-red-500 px-3 py-1.5 text-white shadow-md font-bold rounded-lg cursor-pointer" id="logout" onclick="logout()">Logout</a>
                 </nav>
-                <button class="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                    <i class="fas fa-user"></i>
-                    <a href="/login">Masuk</a>
-                </button>
+                <a href="/login" id="login">
+                    <button class="flex items-center space-x-2 bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 cursor-pointer shadow-md font-bold cursor-pointer">
+                        Masuk
+                    </button>
+                </a>
             </div>
         </div>
     </div>
@@ -33,12 +35,13 @@
                     Jelajahi Nusantara dengan Kapal
                 </h2>
                 <p class="text-xl text-gray-200 max-w-2xl mx-auto">
-                    Nikmati perjalanan laut yang nyaman dan aman.
+                    Nikmati perjalanan laut lintas pulau yang nyaman dan aman.
                 </p>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- Filter Section -->
 <section class="max-w-7xl mx-auto px-4 py-8">
@@ -133,12 +136,27 @@
     let filteredSchedules = [];
 
     // Set default date to today
-    document.getElementById('date').valueAsDate = new Date();
+    // document.getElementById('date').valueAsDate = new Date();
 
     // Fetch schedules on page load
     document.addEventListener('DOMContentLoaded', function() {
         fetchSchedules();
     });
+
+
+    const riwayat = document.getElementById('riwayat-pemesanan')
+    const loginBtn = document.getElementById('login')
+    const logoutBtn = document.getElementById('logout')
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        loginBtn.classList.add('hidden')
+        logoutBtn.classList.add('block')
+    } else {
+        loginBtn.classList.add('block')
+        logoutBtn.classList.add('hidden')
+    }
+
 
     async function fetchSchedules() {
         try {
@@ -191,7 +209,7 @@
                         <div class="flex-1">
                             <div class="flex items-center space-x-3 mb-4">
                                 <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
-                                    <i class="fas fa-ship text-blue-600 text-xl"></i>
+                                    <i class="fas fa-ship text-2xl text-blue-600"></i>
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-lg text-gray-900">${schedule.kapal.nama_kapal}</h3>
@@ -202,24 +220,24 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 <div class="flex items-center space-x-2">
                                     <i class="fas fa-map-marker-alt text-gray-400"></i>
-                                    <div>
-                                        <p class="text-sm text-gray-500">Home Base</p>
+                                    <div class="flex items-center gap-x-1">
+                                        <p class="text-sm text-gray-500">Home Base:</p>
                                         <p class="font-medium">${schedule.kapal.home_base}</p>
                                     </div>
                                 </div>
                                 
                                 <div class="flex items-center space-x-2">
                                     <i class="fas fa-arrow-right text-gray-400"></i>
-                                    <div>
-                                        <p class="text-sm text-gray-500">Tujuan</p>
+                                    <div class="flex items-center gap-x-1">
+                                        <p class="text-sm text-gray-500">Tujuan:</p>
                                         <p class="font-medium">${schedule.tujuan}</p>
                                     </div>
                                 </div>
                                 
                                 <div class="flex items-center space-x-2">
                                     <i class="fas fa-route text-gray-400"></i>
-                                    <div>
-                                        <p class="text-sm text-gray-500">Rute</p>
+                                    <div class="flex items-center gap-x-1">
+                                        <p class="text-sm text-gray-500">Rute:</p>
                                         <p class="font-medium">${schedule.kapal.rute}</p>
                                     </div>
                                 </div>
@@ -246,17 +264,14 @@
                         </div>
                         
                         <div class="mt-4 lg:mt-0 lg:ml-6 flex flex-col items-end">
-                            <div class="text-right mb-4">
+                            <div class="text-right mb-4 flex items-center">
                                 <p class="text-2xl font-bold text-blue-600">${formatPrice(schedule.kapal.harga)}</p>
-                                <p class="text-sm text-gray-500">per penumpang</p>
+                                <p class="text-sm text-gray-500">/per penumpang</p>
                             </div>
                             
                             <div class="flex space-x-2">
-                                <button class="flex items-center space-x-1 px-3 py-2 text-gray-600 hover:text-blue-600 border border-gray-300 rounded-lg hover:border-blue-600">
-                                    <i class="fas fa-heart"></i>
-                                </button>
                                 <button onclick="bookSchedule(${schedule.id})" 
-                                        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+                                        class="bg-blue-600 text-white px-6 py-2 cursor-pointer rounded-lg hover:bg-blue-700 flex items-center space-x-2">
                                     <span>Pilih</span>
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
@@ -352,15 +367,28 @@
         });
     }
 
-    function bookSchedule(scheduleId) {
-        // Implement booking logic here
-        alert(`Booking jadwal ID: ${scheduleId}`);
-        // You can redirect to booking page or show booking modal
-        // window.location.href = `/booking/${scheduleId}`;
+    function bookSchedule(id) {
+        const setId = localStorage.setItem('id', id)
+        window.location.href = `/booking`;
     }
 
-    // Real-time search
-    document.getElementById('homeBase').addEventListener('input', searchSchedules);
-    document.getElementById('destination').addEventListener('input', searchSchedules);
-    document.getElementById('date').addEventListener('change', searchSchedules);
+    function logout() {
+        const token = localStorage.getItem('token');
+        fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('id');
+            localStorage.removeItem('user');
+            location.href = '/login';
+        }).catch((e) => {
+            console.log(e.message);
+        });
+    }
 </script>

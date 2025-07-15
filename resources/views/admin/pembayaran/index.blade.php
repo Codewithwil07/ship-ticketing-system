@@ -37,7 +37,7 @@
         </button>
         <h2 class="text-xl font-bold text-gray-800 mb-4">Bukti Pembayaran</h2>
         <div class="flex justify-center items-center">
-            <img id="bukti-image" src="" class="max-w-full h-auto rounded-lg shadow-md" alt="Bukti Pembayaran">
+            <img id="bukti-image" src="" class="max-w-full h-96 rounded-lg shadow-md" alt="Bukti Pembayaran">
         </div>
     </div>
 </div>

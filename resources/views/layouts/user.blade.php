@@ -1,28 +1,11 @@
+<html>
 <head>
     @include('partials.head')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" ... />
 </head>
-<!-- 
-<script>
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
 
-    if (!token || role !== 'user') {
-        window.location.href = '/login';
-    }
-</script> -->
-
-
-<script src="https://unpkg.com/lucide@latest"></script>
 
 <body class="bg-gray-50">
     @yield('content')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-        });
-    </script>
 </body>
-
-</html>
-
 </html>
