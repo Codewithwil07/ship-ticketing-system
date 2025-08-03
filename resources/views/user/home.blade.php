@@ -1,17 +1,17 @@
 @extends('layouts.user')
 <!-- Header -->
 @section('content')
-<header class="bg-white shadow-sm border-b">
+<header class="absolute top-0 left-0 w-full z-40">
     <div class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-                <i class="fas fa-ship text-2xl text-blue-600"></i>
-                <h1 class="text-2xl font-bold text-gray-900">Sub<span class="text-blue-500">sea</span></h1>
+                <i class="fas fa-ship text-2xl text-blue-400"></i>
+                <h1 class="text-2xl font-bold text-white">Sub<span class="text-blue-300">sea</span></h1>
             </div>
             <div class="flex items-center">
                 <nav class="hidden md:flex space-x-6 items-center">
-                    <a href="#" class="text-gray-700 hover:text-blue-600">Beranda</a>
-                    <a href="{{route('user.tiket')}}" class="text-gray-700 hover:text-blue-600" id="riwayat-tiket">Tiket</a>
+                    <a href="#" class="text-gray-200 hover:text-blue-300">Beranda</a>
+                    <a href="{{route('user.tiket')}}" class="text-gray-200 hover:text-blue-300" id="riwayat-tiket">Tiket</a>
                     <a class="bg-red-500 px-3 py-1.5 text-white shadow-md font-bold rounded-lg cursor-pointer" id="logout" onclick="logout()">Logout</a>
                 </nav>
                 <a href="/login" id="login">
@@ -23,12 +23,9 @@
         </div>
     </div>
 </header>
-
-<!-- Hero Section -->
-<section class="relative bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1707378175207-f64220bd7cdc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVsYWJ1aGFufGVufDB8fDB8fHww');">
+<section class="relative bg-cover bg-center h-screen" style="background-image: url('https://images.unsplash.com/photo-1707378175207-f64220bd7cdc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGVsYWJ1aGFufGVufDB8fDB8fHww');">
     <div class="absolute inset-0 bg-black/60"></div>
-
-    <div class="relative z-10 h-full flex items-center justify-center">
+    <div class="relative z-10 h-full flex items-center justify-center pt-20">s
         <div class="max-w-7xl mx-auto px-4 text-white">
             <div class="text-center">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4">
@@ -102,7 +99,6 @@
                 <ul class="space-y-2 text-gray-400">
                     <li><a href="#" class="hover:text-white">Booking Kapal</a></li>
                     <li><a href="#" class="hover:text-white">Reschedule</a></li>
-                    <li><a href="#" class="hover:text-white">Refund</a></li>
                 </ul>
             </div>
 
@@ -206,7 +202,7 @@
         resultsContainer.innerHTML = schedules.map(schedule => `
                 <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                        <div class="flex-1">
+                        <div class="flex-1 py-5">
                             <div class="flex items-center space-x-3 mb-4">
                                 <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
                                     <i class="fas fa-ship text-2xl text-blue-600"></i>

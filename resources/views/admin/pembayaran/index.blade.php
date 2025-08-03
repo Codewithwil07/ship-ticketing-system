@@ -125,7 +125,7 @@
 
     function closeBuktiModal() {
         buktiModal.classList.add('hidden');
-        buktiImage.src = ''; // Clear image source when closing
+        buktiImage.src = ''; // Clear image source when closingz
     }
 
     async function fetchPembayaran(page = 1) {

@@ -23,7 +23,6 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bukti</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                 </tr>
             </thead>
@@ -110,9 +109,6 @@
                 <td class="px-6 py-4 whitespace-nowrap">${item.pemesanan?.status ?? '-'}</td>
                 <td class="px-6 py-4 whitespace-nowrap">${item.metode_pembayaran ?? '-'}</td>
                 <td class="px-6 py-4 whitespace-nowrap">${item.status_verifikasi ?? '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    ${item.bukti ? `<a href="${item.bukti}" target="_blank" class="text-blue-600 hover:underline">Lihat Bukti</a>` : '-'}
-                </td>
                 <td class="px-6 py-4 whitespace-nowrap">${new Date(item.created_at).toLocaleDateString('id-ID')}</td>
             </tr>
         `).join('');

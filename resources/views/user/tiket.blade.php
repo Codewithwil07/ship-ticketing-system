@@ -1,5 +1,4 @@
 @extends('layouts.user')
-
 @section('content')
 <header class="bg-white shadow-sm">
     <div class="max-w-7xl mx-auto px-4 py-4">
@@ -35,7 +34,6 @@
     <div id="ticketList" class="grid gap-6 md:grid-cols-2 hidden"></div>
 </main>
 
-<!-- Modal Tiket -->
 <div id="ticketModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center px-4">
     <div class="bg-white max-w-lg w-full rounded-lg p-6 relative">
         <button id="closeModal" class="absolute top-3 right-4 text-gray-500 hover:text-black text-xl">&times;</button>
@@ -61,14 +59,13 @@
             </div>
         </div>
         <div class="pt-6 text-right">
-            <button id="btnDownload" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 rounded-md cursor-pointer">
+            <button id="btnDownload" class="bg-emerald-600 hidden hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 rounded-md cursor-pointer">
                 Unduh Tiket
             </button>
         </div>
     </div>
 </div>
 
-<!-- Hidden Area for PNG Download -->
 <div id="downloadArea" class="hidden p-6 w-[600px] bg-white rounded shadow text-gray-800 text-sm">
     <h2 class="text-lg font-bold mb-4">Tiket Digital</h2>
     <p><strong>ID Tiket:</strong> <span id="img_id">-</span></p>
@@ -122,7 +119,7 @@
             const data = ticketsData.find(t => t.id === ticketId);
             if (!data) return;
 
-            document.getElementById('modal_kapal').textContent = `Tiket #${data.id}`;
+            document.getElementById('modal_kapal').textContent = `${data.id}`;
             document.getElementById('modal_nama').textContent = `Nama ${username.name}`;
             document.getElementById('modal_waktu').textContent = data.tanggal;
             document.getElementById('modal_jumlah').textContent = data.jumlah_tiket;
@@ -138,7 +135,12 @@
             // Data untuk diunduh
             document.getElementById('img_id').textContent = `#${data.id}`;
             document.getElementById('img_tanggal').textContent = data.tanggal;
-            // ... isi sisa data untuk diunduh ...
+            document.getElementById('img_jumlah').textContent = data.jumlah_tiket;
+            document.getElementById('img_total').textContent = formatRupiah(data.total_harga);
+            document.getElementById('img_status').textContent = data.status_verifikasi; // Pastikan data.status_verifikasi ada
+            // Asumsi data.metode_pembayaran ada dari API
+            document.getElementById('img_metode').textContent = data.metode_pembayaran || 'Tidak diketahui';
+
 
             document.getElementById('btnDownload').onclick = () => downloadTiketAsPNG();
             modal.classList.remove('hidden');
@@ -146,13 +148,17 @@
 
         const downloadTiketAsPNG = () => {
             const area = document.getElementById('downloadArea');
-            area.classList.remove('hidden');
+            area.classList.remove('hidden'); // Memastikan area terlihat oleh html2canvas
             html2canvas(area).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `tiket-${document.getElementById('img_id').textContent}.png`;
-                link.href = canvas.toDataURL();
+                link.download = `tiket-${document.getElementById('img_id').textContent}.png`; // Nama file dengan ekstensi .png
+                link.href = canvas.toDataURL(); // Default html2canvas adalah PNG jika tanpa parameter kedua
                 link.click();
-                area.classList.add('hidden');
+                area.classList.add('hidden'); // Menyembunyikan kembali area
+            }).catch(error => { // Menambahkan catch untuk error handling pada Promise
+                console.error('Error saat mengunduh tiket:', error);
+                alert('Gagal mengunduh tiket. Silakan coba lagi.');
+                area.classList.add('hidden'); // Pastikan area disembunyikan kembali jika ada error
             });
         };
 
@@ -167,8 +173,6 @@
         };
 
         // === FUNGSI UTAMA (INIT) ===
-        // Ganti fungsi fetchTickets() yang lama dengan yang ini
-
         async function fetchTickets() {
             console.log('1. Memulai fungsi fetchTickets...'); // LOG 1
 
@@ -185,6 +189,10 @@
                 if (!res.ok) {
                     // Jika status bukan 2xx (misal 401, 404, 500)
                     console.error('Respon tidak OK!', res.status, res.statusText);
+                    // Tambahan: Redirect ke login jika 401 Unauthorized
+                    if (res.status === 401) {
+                        window.location.href = '/login';
+                    }
                     throw new Error('Gagal memuat data tiket. Status: ' + res.status);
                 }
 
@@ -202,31 +210,46 @@
                     return;
                 }
 
-                // ... (sisa kode untuk render tiket tidak berubah) ...
+                // ... (sisa kode untuk render tiket) ...
                 const today = new Date().toISOString().split('T')[0];
                 ticketList.innerHTML = data.map(item => {
                     const isExpired = item.tanggal < today;
                     const label = isExpired ? 'Kadaluarsa' : 'Aktif';
                     const labelColor = isExpired ? 'red' : 'green';
 
+                    // Menampilkan status verifikasi di daftar riwayat tiket
+                    const verificationStatus = item.status_verifikasi;
+                    let verificationBadgeClass = 'bg-gray-100 text-gray-700';
+                    if (verificationStatus === 'diterima') {
+                        verificationBadgeClass = 'bg-green-100 text-green-700';
+                    } else if (verificationStatus === 'menunggu') {
+                        verificationBadgeClass = 'bg-yellow-100', 'text-yellow-700';
+                    } else if (verificationStatus === 'ditolak') {
+                        verificationBadgeClass = 'bg-red-100', 'text-red-700';
+                    }
+
+
                     return `
-                <div class="rounded-lg p-4 bg-white shadow-md flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-800">Tiket Id ${item.id}</h3>
-                        <p class="text-sm text-gray-600">Nama: ${username.name}</p>
-                        <p class="text-sm text-gray-600">Tanggal: ${item.tanggal}</p>
-                        <p class="text-sm text-gray-600">Jumlah: ${item.jumlah_tiket} tiket</p>
-                        <span class="inline-block mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-${labelColor}-100 text-${labelColor}-700">
-                            ${label}
-                        </span>
-                    </div>
-                    <div class="text-right mt-4">
-                        <button class="btn-view-detail cursor-pointer text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold" data-ticket-id="${item.id}">
-                            Lihat Detail
-                        </button>
-                    </div>
-                </div>
-            `;
+                        <div class="rounded-lg p-4 bg-white shadow-md flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800">ID Tiket: ${item.id}</h3>
+                                <p class="text-sm text-gray-600">Nama: ${username.name}</p>
+                                <p class="text-sm text-gray-600">Tanggal: ${item.tanggal}</p>
+                                <p class="text-sm text-gray-600">Jumlah: ${item.jumlah_tiket} tiket</p>
+                                <span class="inline-block mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-${labelColor}-100 text-${labelColor}-700">
+                                    ${label}
+                                </span>
+                                <span class="inline-block mt-2 ml-2 text-xs font-semibold px-3 py-1 rounded-full ${verificationBadgeClass}">
+                                    ${verificationStatus}
+                                </span>
+                            </div>
+                            <div class="text-right mt-4">
+                                <button class="btn-view-detail cursor-pointer text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold" data-ticket-id="${item.id}">
+                                    Lihat Detail
+                                </button>
+                            </div>
+                        </div>
+                    `;
                 }).join('');
 
                 setupEventListeners();

@@ -3,3 +3,14 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+
+/* Di file CSS kamu atau dalam <style> di Blade */
+#downloadArea.hidden {
+    position: absolute;
+    left: -9999px; /* Pindahkan jauh ke kiri layar */
+    top: -9999px;
+    opacity: 0;   /* Buat transparan */
+    z-index: -1;  /* Pastikan di belakang elemen lain */
+    pointer-events: none; /* Nonaktifkan interaksi mouse */
+    /* Pastikan display-nya tetap ada, misal display: block; jika perlu */
+}
