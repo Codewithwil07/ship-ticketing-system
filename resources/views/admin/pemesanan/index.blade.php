@@ -48,6 +48,19 @@
 
 <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-green-600 text-white px-4 py-2 rounded shadow mt-10"></div>
 
+<!-- Modal Lihat KTP -->
+<div id="ktp-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-white rounded-xl p-4 max-w-lg w-full relative">
+        <button onclick="closeKTPModal()"
+            class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <h2 class="text-lg font-bold mb-4">Bukti KTP</h2>
+        <img id="ktp-image" src="" alt="Bukti KTP" class="w-full rounded shadow">
+    </div>
+</div>
+
+
 <!-- Modal (Update Status) -->
 <div id="pemesanan-modal" class="fixed inset-0 z-50 hidden bg-black/30 backdrop-blur-sm flex items-center justify-center">
     <div class="bg-white rounded-xl w-full max-w-md p-6 relative">
@@ -122,7 +135,7 @@
         const data = response.data;
 
         console.log(data);
-        
+
 
         tableBody.innerHTML = data.map(p => `
             <tr class="border-t hover:bg-gray-50">
@@ -130,6 +143,14 @@
                 <td class="px-4 py-3">${p.jadwal?.tanggal_berangkat || '-'} (${p.jadwal?.tujuan || '-'})</td>
                 <td class="px-4 py-3">${p.jumlah_tiket}</td>
                 <td class="px-4 py-3">Rp${p.total_harga.toLocaleString()}</td>
+                <td class="px-4 py-3">
+    ${p.bukti_ktp 
+        ? `<button onclick="viewKTP('${p.bukti_ktp}')" 
+            class="text-blue-600 hover:underline cursor-pointer">
+            Lihat KTP
+          </button>` 
+        : '-'}
+</td>
                 <td class="px-4 py-3">
                     <span class="px-2 py-1 rounded-full text-xs font-semibold ${p.status === 'lunas' ? 'bg-green-100 text-green-600' : p.status === 'batal' ? 'bg-yellow-100 text-yellow-600' : 'bg-red-100 text-red-600'}">
                         ${p.status}
@@ -196,9 +217,21 @@
             const error = await res.json()
             alert('Gagal memperbarui data');
             console.log(error);
-            
+
         }
     });
+
+    function viewKTP(path) {
+        const modal = document.getElementById('ktp-modal');
+        const img = document.getElementById('ktp-image');
+        img.src = `/storage/${path}`; // sesuaikan path penyimpanan file KTP
+        modal.classList.remove('hidden');
+    }
+
+    function closeKTPModal() {
+        document.getElementById('ktp-modal').classList.add('hidden');
+    }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('filter-status').addEventListener('change', () => fetchPemesanan());

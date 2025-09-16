@@ -16,6 +16,7 @@ class Pemesanan extends Model
         'jumlah_tiket',
         'total_harga',
         'status',
+        'bukti_ktp'
     ];
 
     public function user()

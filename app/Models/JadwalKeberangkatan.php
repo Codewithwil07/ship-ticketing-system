@@ -15,6 +15,8 @@ class JadwalKeberangkatan extends Model
         'jam_berangkat',
         'tujuan',
         'status',
+        'harga',     // Ditambahkan
+        'asal',      // Ditambahkan
     ];
 
     public function kapal()

@@ -54,6 +54,12 @@
                             <input type="file" id="bukti_pembayaran" accept="image/png, image/jpeg" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                         </div>
 
+
+                        <div class="mt-4">
+                            <label for="bukti_ktp" class="block text-sm font-medium text-gray-700">Unggah Bukti KTP</label>
+                            <input type="file" id="bukti_ktp" accept="image/png, image/jpeg" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                        </div>
+
                         <div class="mt-8 text-right">
                             <button type="submit" id="submitButton" class="bg-blue-600 w-full cursor-pointer text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-700 shadow-md text-center">
                                 Kirim & Buat Tiket
@@ -149,8 +155,8 @@
         function populateSummary(schedule) {
             document.getElementById('summary_kapal').textContent = schedule.kapal.nama_kapal;
             document.getElementById('summary_rute').textContent = `${schedule.kapal.home_base} - ${schedule.tujuan}`;
-            hargaPerTiketElem.setAttribute('data-harga', schedule.kapal.harga);
-            hargaPerTiketElem.textContent = formatPrice(schedule.kapal.harga);
+            hargaPerTiketElem.setAttribute('data-harga', schedule.harga);
+            hargaPerTiketElem.textContent = formatPrice(schedule.harga);
             updateTotal();
         }
 
@@ -185,28 +191,33 @@
         document.getElementById('bookingForm').addEventListener('submit', async e => {
             e.preventDefault();
             const bukti = document.getElementById('bukti_pembayaran').files[0];
+            const bukti_ktp = document.getElementById('bukti_ktp').files[0];
             const metode = document.getElementById('metode_pembayaran').value;
             const jumlah = parseInt(jumlahTiketInput.value) || 1;
             const harga = parseInt(hargaPerTiketElem.getAttribute('data-harga')) || 0;
             const total = jumlah * harga;
 
             if (!bukti) return showToast('Harap upload bukti pembayaran', 'error');
+            if (!bukti_ktp) return showToast('Harap upload bukti ktp', 'error');
 
             try {
-                // 1. Kirim pemesanan
+                // 1. Kirim pemesanan pakai FormData
+                const formPemesanan = new FormData();
+                formPemesanan.append('jadwal_id', Number(id));
+                formPemesanan.append('jumlah_tiket', jumlah);
+                formPemesanan.append('total_harga', total);
+                formPemesanan.append('status', 'pending');
+                formPemesanan.append('bukti_ktp', bukti_ktp); // ✅ file ikut terkirim
+
                 const resPemesanan = await fetch(API_PEMESANAN_URL, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${token}`
+                        // ❌ jangan set Content-Type manual, biar browser otomatis isi "multipart/form-data"
                     },
-                    body: JSON.stringify({
-                        jadwal_id: Number(id),
-                        jumlah_tiket: jumlah,
-                        total_harga: total,
-                        status: 'pending'
-                    })
+                    body: formPemesanan
                 });
+
 
                 const contentType = resPemesanan.headers.get('content-type') || '';
                 if (!resPemesanan.ok || !contentType.includes('application/json')) {

@@ -38,9 +38,13 @@ class PemesananController extends Controller
                 'jumlah_tiket' => 'required|integer|min:1',
                 'total_harga' => 'required|integer',
                 'status' => 'required|in:pending,lunas,batal',
+                'bukti_ktp' => 'required|image|mimes:jpg,jpeg,png|max:2048',
             ]);
 
             $user = $request->user();
+
+            $path = $request->file('bukti_ktp')->store('bukti-ktp', 'public');
+
 
             $pemesanan = Pemesanan::create([
                 'user_id' => $user->id,
@@ -49,6 +53,7 @@ class PemesananController extends Controller
                 'jumlah_tiket' => $data['jumlah_tiket'],
                 'total_harga' => $data['total_harga'],
                 'status' => $data['status'],
+                'bukti_ktp' => $path
             ]);
 
             return response()->json($pemesanan, 201);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\TicketController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\IsAdmin;
@@ -33,3 +34,8 @@ Route::get('/admin/jadwal', fn() => view('admin.jadwal.index'))->name('admin.jad
 Route::get('/admin/pemesanan', fn() => view('admin.pemesanan.index'))->name('admin.pemesanan.index');
 Route::get('/admin/pembayaran', fn() => view('admin.pembayaran.index'))->name('admin.pembayaran.index');
 Route::get('/admin/laporan', fn() => view('admin.laporan.index'))->name('admin.laporan.index');
+
+// routes/web.php
+
+
+Route::get('/download-ticket/{id}', [TicketController::class, 'download']);

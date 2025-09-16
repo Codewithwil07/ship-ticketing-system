@@ -4,7 +4,6 @@
     <div class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-                <i class="fas fa-ship text-2xl text-blue-600"></i>
                 <h1 class="text-2xl font-bold text-gray-900">Sub<span class="text-blue-500">sea</span></h1>
             </div>
             <div class="flex items-center">
@@ -66,49 +65,34 @@
     </div>
 </div>
 
-<div id="downloadArea" class="hidden p-6 w-[600px] bg-white rounded shadow text-gray-800 text-sm">
-    <h2 class="text-lg font-bold mb-4">Tiket Digital</h2>
-    <p><strong>ID Tiket:</strong> <span id="img_id">-</span></p>
-    <p><strong>Tanggal:</strong> <span id="img_tanggal">-</span></p>
-    <p><strong>Jumlah Tiket:</strong> <span id="img_jumlah">-</span></p>
-    <p><strong>Total Harga:</strong> <span id="img_total">-</span></p>
-    <p><strong>Status Verifikasi:</strong> <span id="img_status">-</span></p>
-    <p><strong>Metode Pembayaran:</strong> <span id="img_metode">-</span></p>
-</div>
 @endsection
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-
-        const riwayat = document.getElementById('riwayat-pemesanan')
         const loginBtn = document.getElementById('login')
         const logoutBtn = document.getElementById('logout')
         const token = localStorage.getItem('token');
 
         if (token) {
             loginBtn.classList.add('hidden')
-            logoutBtn.classList.add('block')
+            logoutBtn.classList.remove('hidden')
         } else {
-            loginBtn.classList.add('block')
+            loginBtn.classList.remove('hidden')
             logoutBtn.classList.add('hidden')
         }
 
-
-        // === ELEMEN DOM ===
+        // DOM
         const ticketList = document.getElementById('ticketList');
         const loading = document.getElementById('loading');
         const modal = document.getElementById('ticketModal');
         const closeModalBtn = document.getElementById('closeModal');
+        const btnDownload = document.getElementById('btnDownload');
 
-        const user = localStorage.getItem('user')
-        const username = JSON.parse(user)
+        const user = localStorage.getItem('user');
+        const username = JSON.parse(user);
 
+        let ticketsData = [];
 
-        // === DATA & STATE ===
-        let ticketsData = []; // Simpan data tiket di sini
-
-        // === FUNGSI-FUNGSI ===
         const formatRupiah = val => new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
@@ -120,50 +104,25 @@
             if (!data) return;
 
             document.getElementById('modal_kapal').textContent = `${data.id}`;
-            document.getElementById('modal_nama').textContent = `Nama ${username.name}`;
+            document.getElementById('modal_nama').textContent = username.name;
             document.getElementById('modal_waktu').textContent = data.tanggal;
             document.getElementById('modal_jumlah').textContent = data.jumlah_tiket;
             document.getElementById('modal_total').textContent = formatRupiah(data.total_harga);
 
             const badge = document.getElementById('modal_verifikasi');
             badge.textContent = data.status_verifikasi;
-            badge.className = 'inline-block text-xs font-semibold px-3 py-1 rounded-full'; // Reset class
-            if (data.status_verifikasi === 'diterima') badge.classList.add('bg-green-100', 'text-green-700');
-            else if (data.status_verifikasi === 'menunggu') badge.classList.add('bg-yellow-100', 'text-yellow-700');
-            else badge.classList.add('bg-red-100', 'text-red-700');
+            badge.className = 'inline-block text-xs font-semibold px-3 py-1 rounded-full';
+            if (data.status_verifikasi === 'diterima') badge.style.backgroundColor = '#d1fae5', badge.style.color = '#065f46';
+            else if (data.status_verifikasi === 'menunggu') badge.style.backgroundColor = '#fef3c7', badge.style.color = '#78350f';
+            else badge.style.backgroundColor = '#fee2e2', badge.style.color = '#991b1b';
 
-            // Data untuk diunduh
-            document.getElementById('img_id').textContent = `#${data.id}`;
-            document.getElementById('img_tanggal').textContent = data.tanggal;
-            document.getElementById('img_jumlah').textContent = data.jumlah_tiket;
-            document.getElementById('img_total').textContent = formatRupiah(data.total_harga);
-            document.getElementById('img_status').textContent = data.status_verifikasi; // Pastikan data.status_verifikasi ada
-            // Asumsi data.metode_pembayaran ada dari API
-            document.getElementById('img_metode').textContent = data.metode_pembayaran || 'Tidak diketahui';
+            btnDownload.classList.toggle('hidden', data.status_verifikasi !== 'diterima');
+            btnDownload.onclick = () => downloadTiketCanvas(data, username.name);
 
-
-            document.getElementById('btnDownload').onclick = () => downloadTiketAsPNG();
             modal.classList.remove('hidden');
         };
 
-        const downloadTiketAsPNG = () => {
-            const area = document.getElementById('downloadArea');
-            area.classList.remove('hidden'); // Memastikan area terlihat oleh html2canvas
-            html2canvas(area).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `tiket-${document.getElementById('img_id').textContent}.png`; // Nama file dengan ekstensi .png
-                link.href = canvas.toDataURL(); // Default html2canvas adalah PNG jika tanpa parameter kedua
-                link.click();
-                area.classList.add('hidden'); // Menyembunyikan kembali area
-            }).catch(error => { // Menambahkan catch untuk error handling pada Promise
-                console.error('Error saat mengunduh tiket:', error);
-                alert('Gagal mengunduh tiket. Silakan coba lagi.');
-                area.classList.add('hidden'); // Pastikan area disembunyikan kembali jika ada error
-            });
-        };
-
         const setupEventListeners = () => {
-            // Tambahkan event listener ke semua tombol "Lihat Detail"
             document.querySelectorAll('.btn-view-detail').forEach(button => {
                 button.addEventListener('click', () => {
                     const ticketId = parseInt(button.dataset.ticketId);
@@ -172,34 +131,21 @@
             });
         };
 
-        // === FUNGSI UTAMA (INIT) ===
         async function fetchTickets() {
-            console.log('1. Memulai fungsi fetchTickets...'); // LOG 1
-
             try {
-                console.log('2. Mengirim request ke API...'); // LOG 2
                 const res = await fetch('/api/user/pembayarans', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
                     }
                 });
-                console.log('3. Menerima respons dari API:', res); // LOG 3
 
                 if (!res.ok) {
-                    // Jika status bukan 2xx (misal 401, 404, 500)
-                    console.error('Respon tidak OK!', res.status, res.statusText);
-                    // Tambahan: Redirect ke login jika 401 Unauthorized
-                    if (res.status === 401) {
-                        window.location.href = '/login';
-                    }
+                    if (res.status === 401) window.location.href = '/login';
                     throw new Error('Gagal memuat data tiket. Status: ' + res.status);
                 }
 
-                console.log('4. Mencoba parsing respons sebagai JSON...'); // LOG 4
                 const data = await res.json();
-                console.log('5. Data berhasil di-parse:', data); // LOG 5
-
                 ticketsData = data;
 
                 loading.classList.add('hidden');
@@ -210,68 +156,63 @@
                     return;
                 }
 
-                // ... (sisa kode untuk render tiket) ...
                 const today = new Date().toISOString().split('T')[0];
                 ticketList.innerHTML = data.map(item => {
                     const isExpired = item.tanggal < today;
                     const label = isExpired ? 'Kadaluarsa' : 'Aktif';
                     const labelColor = isExpired ? 'red' : 'green';
-
-                    // Menampilkan status verifikasi di daftar riwayat tiket
-                    const verificationStatus = item.status_verifikasi;
-                    let verificationBadgeClass = 'bg-gray-100 text-gray-700';
-                    if (verificationStatus === 'diterima') {
-                        verificationBadgeClass = 'bg-green-100 text-green-700';
-                    } else if (verificationStatus === 'menunggu') {
-                        verificationBadgeClass = 'bg-yellow-100', 'text-yellow-700';
-                    } else if (verificationStatus === 'ditolak') {
-                        verificationBadgeClass = 'bg-red-100', 'text-red-700';
+                    let verificationBadgeColor = '#d1d5db';
+                    let verificationTextColor = '#374151';
+                    if (item.status_verifikasi === 'diterima') {
+                        verificationBadgeColor = '#d1fae5';
+                        verificationTextColor = '#065f46';
+                    } else if (item.status_verifikasi === 'menunggu') {
+                        verificationBadgeColor = '#fef3c7';
+                        verificationTextColor = '#78350f';
+                    } else if (item.status_verifikasi === 'ditolak') {
+                        verificationBadgeColor = '#fee2e2';
+                        verificationTextColor = '#991b1b';
                     }
 
-
                     return `
-                        <div class="rounded-lg p-4 bg-white shadow-md flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-800">ID Tiket: ${item.id}</h3>
-                                <p class="text-sm text-gray-600">Nama: ${username.name}</p>
-                                <p class="text-sm text-gray-600">Tanggal: ${item.tanggal}</p>
-                                <p class="text-sm text-gray-600">Jumlah: ${item.jumlah_tiket} tiket</p>
-                                <span class="inline-block mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-${labelColor}-100 text-${labelColor}-700">
-                                    ${label}
-                                </span>
-                                <span class="inline-block mt-2 ml-2 text-xs font-semibold px-3 py-1 rounded-full ${verificationBadgeClass}">
-                                    ${verificationStatus}
-                                </span>
-                            </div>
-                            <div class="text-right mt-4">
-                                <button class="btn-view-detail cursor-pointer text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold" data-ticket-id="${item.id}">
-                                    Lihat Detail
-                                </button>
-                            </div>
+                    <div class="rounded-lg p-4 bg-white shadow-md flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">ID Tiket: ${item.id}</h3>
+                            <p class="text-sm text-gray-600">Nama: ${username.name}</p>
+                            <p class="text-sm text-gray-600">Tanggal: ${item.tanggal}</p>
+                            <p class="text-sm text-gray-600">Jumlah: ${item.jumlah_tiket} tiket</p>
+                            <span style="display:inline-block; margin-top:0.5rem; padding:0.2rem 0.5rem; border-radius:0.25rem; background-color:${labelColor}-100; color:${labelColor}-700; font-size:0.75rem; font-weight:600">
+                                ${label}
+                            </span>
+                            <span style="display:inline-block; margin-top:0.5rem; margin-left:0.5rem; padding:0.2rem 0.5rem; border-radius:0.25rem; background-color:${verificationBadgeColor}; color:${verificationTextColor}; font-size:0.75rem; font-weight:600;">
+                                ${item.status_verifikasi}
+                            </span>
                         </div>
-                    `;
+                        <div class="text-right mt-4">
+                            <button class="btn-view-detail cursor-pointer text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold" data-ticket-id="${item.id}">
+                                Lihat Detail
+                            </button>
+                        </div>
+                    </div>
+                `;
                 }).join('');
 
                 setupEventListeners();
 
-
             } catch (e) {
-                console.error('❌ Terjadi error di blok catch:', e); // LOG ERROR
+                console.error('❌ Terjadi error:', e);
                 loading.innerHTML = `<p class="text-red-500 font-semibold">${e.message}</p>`;
             }
         }
-        // === EKSEKUSI AWAL ===
+
         if (!token) {
             window.location.href = '/login';
         } else {
-            // Toggle tombol login/logout
             loginBtn.classList.add('hidden');
             logoutBtn.classList.remove('hidden');
-            // Ambil data tiket
             fetchTickets();
         }
 
-        // Event listener untuk modal
         closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
         modal.addEventListener('click', e => {
             if (e.target === modal) modal.classList.add('hidden');
@@ -284,5 +225,82 @@
         localStorage.removeItem('id');
         localStorage.removeItem('role');
         window.location.href = '/login';
+    }
+
+    // ======= Canvas-based download tiket =======
+    function downloadTiketCanvas(data, username) {
+        const width = 600;
+        const height = 350;
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        // Fungsi formatRupiah global
+        function formatRupiah(val) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(val);
+        }
+
+        // Background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+
+        // Border
+        ctx.strokeStyle = '#d1d5db';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, width, height);
+
+        // Header
+        ctx.fillStyle = '#1f2937';
+        ctx.font = 'bold 22px sans-serif';
+        ctx.fillText('Tiket Digital', 20, 40);
+
+        ctx.font = '16px sans-serif';
+        ctx.fillStyle = '#374151';
+        ctx.fillText(`ID Tiket: #${data.id}`, 20, 75);
+        ctx.fillText(`Nama: ${username || '-'}`, 20, 105);
+        ctx.fillText(`Tanggal: ${data.tanggal}`, 20, 135);
+        ctx.fillText(`Jumlah Tiket: ${data.jumlah_tiket}`, 20, 165);
+        ctx.fillText(`Total Harga: ${formatRupiah(data.total_harga)}`, 20, 195);
+
+        // Status Badge
+        const status = data.status_verifikasi;
+        let badgeColor = '#d1d5db';
+        let textColor = '#374151';
+        if (status === 'diterima') {
+            badgeColor = '#d1fae5';
+            textColor = '#065f46';
+        } else if (status === 'menunggu') {
+            badgeColor = '#fef3c7';
+            textColor = '#78350f';
+        } else if (status === 'ditolak') {
+            badgeColor = '#fee2e2';
+            textColor = '#991b1b';
+        }
+
+        ctx.fillStyle = badgeColor;
+        ctx.fillRect(20, 225, 120, 28);
+
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(status.toUpperCase(), 25, 225 + 14);
+
+        // Metode Pembayaran
+        ctx.font = '16px sans-serif';
+        ctx.fillStyle = '#374151';
+        ctx.fillText(`Metode Pembayaran: ${data.metode_pembayaran || 'Tidak diketahui'}`, 20, 270);
+
+        // Download
+        const link = document.createElement('a');
+        link.download = `tiket-${data.id}.png`;
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>

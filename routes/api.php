@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\PembayaranController;
 use App\Models\Pembayaran;
 use App\Http\Controllers\Api\Admin\PembayaranController as AdminPembayaran;
 use App\Http\Controllers\Api\JadwalKeberangkatanController;
+use App\Http\Controllers\Api\TicketController;
+
 
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
@@ -62,3 +64,5 @@ Route::get('/user/jadwal-keberangkatan/{id}', [JadwalKeberangkatanController::cl
 Route::middleware(['auth:api', \App\Http\Middleware\IsAdmin::class])->group(function () {
     Route::apiResource('jadwal-keberangkatan', JadwalKeberangkatanController::class)->except(['getUser', 'showJadwal']);
 });
+
+Route::get('/download-ticket/{id}', [TicketController::class, 'download']);

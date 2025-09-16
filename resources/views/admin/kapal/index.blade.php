@@ -39,7 +39,6 @@
                 <th class="px-4 py-3">Nama</th>
                 <th class="px-4 py-3">Tipe</th>
                 <th class="px-4 py-3">Kapasitas</th>
-                <th class="px-4 py-3">Harga</th>
                 <th class="px-4 py-3">Kode</th>
                 <th class="px-4 py-3">Rute</th>
                 <th class="px-4 py-3">Homebase</th>
@@ -76,10 +75,6 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Kapasitas</label>
                     <input type="number" name="kapasitas" required class="w-full px-3 py-2 border rounded-md">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Harga</label>
-                    <input type="number" name="harga" required class="w-full px-3 py-2 border rounded-md">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Kode Kapal</label>
@@ -139,7 +134,6 @@
         form.nama_kapal.value = data?.nama_kapal || '';
         form.tipe.value = data?.tipe || '';
         form.kapasitas.value = data?.kapasitas || '';
-        form.harga.value = data?.harga || '';
         form.kode_kapal.value = data?.kode_kapal || '';
         form.rute.value = data?.rute || '';
         form.home_base.value = data?.home_base || '';
@@ -195,7 +189,6 @@
                     <td class="px-4 py-3">${kapal.nama_kapal}</td>
                     <td class="px-4 py-3">${kapal.tipe}</td>
                     <td class="px-4 py-3">${kapal.kapasitas}</td>
-                    <td class="px-4 py-3">${kapal.harga}</td>
                     <td class="px-4 py-3">${kapal.kode_kapal}</td>
                     <td class="px-4 py-3">${kapal.rute}</td>
                     <td class="px-4 py-3">${kapal.home_base}</td>

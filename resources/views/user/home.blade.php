@@ -225,6 +225,14 @@
                                 <div class="flex items-center space-x-2">
                                     <i class="fas fa-arrow-right text-gray-400"></i>
                                     <div class="flex items-center gap-x-1">
+                                        <p class="text-sm text-gray-500">Asal:</p>
+                                        <p class="font-medium">${schedule.asal}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-arrow-right text-gray-400"></i>
+                                    <div class="flex items-center gap-x-1">
                                         <p class="text-sm text-gray-500">Tujuan:</p>
                                         <p class="font-medium">${schedule.tujuan}</p>
                                     </div>
@@ -261,7 +269,7 @@
                         
                         <div class="mt-4 lg:mt-0 lg:ml-6 flex flex-col items-end">
                             <div class="text-right mb-4 flex items-center">
-                                <p class="text-2xl font-bold text-blue-600">${formatPrice(schedule.kapal.harga)}</p>
+                                <p class="text-2xl font-bold text-blue-600">${formatPrice(schedule.harga)}</p>
                                 <p class="text-sm text-gray-500">/per penumpang</p>
                             </div>
                             

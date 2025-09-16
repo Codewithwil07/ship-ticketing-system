@@ -8,4 +8,9 @@
 <!-- @vite('resources/css/app.css') -->
 
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/2.2.2/html2canvas.min.js"></script>
+
+
+
+
 <!-- Lucide Icons (Traveloka style icon) -->

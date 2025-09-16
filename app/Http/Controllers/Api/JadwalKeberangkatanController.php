@@ -20,10 +20,14 @@ class JadwalKeberangkatanController extends Controller
             $query = JadwalKeberangkatan::with('kapal');
 
             if ($search = $request->query('search')) {
-                $query->where('tujuan', 'like', "%$search%")
-                    ->orWhereHas('kapal', function ($q) use ($search) {
-                        $q->where('nama_kapal', 'like', "%$search%");
-                    });
+                // PENCARIAN SEKARANG MENCAKUP 'asal' DAN 'tujuan'
+                $query->where(function ($q) use ($search) {
+                    $q->where('asal', 'like', "%$search%")
+                        ->orWhere('tujuan', 'like', "%$search%")
+                        ->orWhereHas('kapal', function ($subq) use ($search) {
+                            $subq->where('nama_kapal', 'like', "%$search%");
+                        });
+                });
             }
 
             if ($status = $request->query('status')) {
@@ -73,12 +77,15 @@ class JadwalKeberangkatanController extends Controller
     public function store(Request $request)
     {
         try {
+            // VALIDASI DITAMBAHKAN UNTUK 'asal' DAN 'harga'
             $data = $request->validate([
-                'kapal_id' => 'required|exists:kapals,id',
-                'tanggal_berangkat' => '|required|date',
-                'jam_berangkat' => 'required|date_format:H:i',
-                'tujuan' => 'required|string',
-                'status' => 'required|in:tersedia,selesai,dibatalkan',
+                'kapal_id'          => 'required|exists:kapals,id',
+                'tanggal_berangkat' => 'required|date',
+                'jam_berangkat'     => 'required|date_format:H:i',
+                'asal'              => 'required|string|max:255', // DITAMBAHKAN
+                'tujuan'            => 'required|string|max:255',
+                'status'            => 'required|in:tersedia,selesai,dibatalkan',
+                'harga'             => 'required|integer|min:0', // DITAMBAHKAN
             ]);
 
             $jadwal = JadwalKeberangkatan::create($data);
@@ -111,12 +118,15 @@ class JadwalKeberangkatanController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            // VALIDASI DITAMBAHKAN UNTUK 'asal' DAN 'harga'
             $data = $request->validate([
-                'kapal_id' => 'sometimes|required|exists:kapals,id',
+                'kapal_id'          => 'sometimes|required|exists:kapals,id',
                 'tanggal_berangkat' => 'sometimes|required|date',
-                'jam_berangkat' => 'sometimes|required|date_format:H:i',
-                'tujuan' => 'sometimes|required|string',
-                'status' => 'sometimes|required|in:tersedia,selesai,dibatalkan',
+                'jam_berangkat'     => 'sometimes|required|date_format:H:i',
+                'asal'              => 'sometimes|required|string|max:255', // DITAMBAHKAN
+                'tujuan'            => 'sometimes|required|string|max:255',
+                'status'            => 'sometimes|required|in:tersedia,selesai,dibatalkan',
+                'harga'             => 'sometimes|required|integer|min:0', // DITAMBAHKAN
             ]);
 
             $jadwal = JadwalKeberangkatan::findOrFail($id);

@@ -10,7 +10,6 @@ use App\Models\Pemesanan;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Throwable;
 
 
 class PembayaranController extends Controller
@@ -147,6 +146,18 @@ class PembayaranController extends Controller
             // Jika diterima, update status pemesanan juga
             if ($data['status_verifikasi'] === 'diterima') {
                 $pembayaran->pemesanan->update(['status' => 'lunas']);
+                $jadwal = $pembayaran->pemesanan->jadwal;
+                $kapal  = $jadwal?->kapal;
+
+                if ($kapal) {
+                    $kapal->kapasitas -= $pembayaran->pemesanan->jumlah_tiket;
+
+                    if ($kapal->kapasitas < 0) {
+                        $kapal->kapasitas = 0; // jangan sampai minus
+                    }
+
+                    $kapal->save();
+                }
             }
 
             return response()->json(['message' => 'Status pembayaran diperbarui', 'data' => $pembayaran]);
